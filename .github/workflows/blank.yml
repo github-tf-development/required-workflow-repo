@@ -1,14 +1,7 @@
 name: Call a reusable workflow
 
 on:
-  pull_request:
-    branches:
-      - main
-      - prod
-  push:
-    branches:
-      - main
-      - prod
+  workflow_dispatch:
 
 jobs:
   call-workflow-passing-data:
