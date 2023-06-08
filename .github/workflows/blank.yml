@@ -1,52 +1,31 @@
-name: Terraform
-on:
-  pull_request:
-    branches: [ "main" ]
+name: Call a reusable workflow
 
-permissions:
-  contents: read
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  validate:
+  call-workflow-passing-data:
+    permissions:
+      contents: read
+      pull-requests: write
+    uses: SandBoxFeatureOrg/required-workflow-sandbox/.github/workflows/called-workflow.yml@main
+    with:
+      var_a: ${{ vars.VAR_A }}
+      var_b: ${{ vars.VAR_B }}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+
+  print-vars:
     runs-on: ubuntu-latest
-    name: Validate terraform configuration
-    defaults:
-      run:
-        shell: bash
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: terraform validate
-        uses: dflook/terraform-validate@v1
-        with:
-          path: /
-  fmt-check:
-    runs-on: ubuntu-latest
-    name: Check formatting of terraform files
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: terraform fmt
-        uses: dflook/terraform-fmt-check@v1
-        with:
-          path: /
-  tflint:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-    steps:
-    - uses: actions/checkout@v2
-      name: Checkout source code
-    - uses: terraform-linters/setup-tflint@v3
-      name: Setup TFLint
-      with:
-        tflint_version: latest
-    - name: Init TFLint
-      run: tflint --init
-    - name: Run TFLint
+    - name: print-vars
       run: |
-        tflint -f compact --recursive
+         echo "VAR-A is : ${{ vars.VAR_A }}"
+         echo "VAR-B is : ${{ vars.VAR_B }}"
+         echo "SECRET is : ${{ secrets.GITHUB_TOKEN }}"
+         
+      
+    
+  
